@@ -39,7 +39,7 @@ jobs:
       run: pnpm install --no-frozen-lockfile
 
     - name: Install EAS CLI
-      run: pnpm install -g eas-cli
+      run: npm install -g eas-cli@latest
 
     - name: Login to Expo
       run: eas login --non-interactive
