@@ -42,7 +42,7 @@ jobs:
       run: pnpm install -g eas-cli
 
     - name: Login to Expo
-      run: eas login --token=${{ secrets.EXPO_TOKEN }}
+      run: eas login --non-interactive
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
