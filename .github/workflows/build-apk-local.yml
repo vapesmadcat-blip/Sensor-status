@@ -1,12 +1,11 @@
 name: Build APK for Testing
 
 on:
-  workflow_dispatch: # Apenas disparo manual
+  workflow_dispatch:
 
 jobs:
   build_apk:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -22,37 +21,14 @@ jobs:
         version: 9
         run_install: false
 
-    - name: Get pnpm store directory
-      shell: bash
-      run: |
-        echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
-
-    - name: Setup pnpm cache
-      uses: actions/cache@v4
-      with:
-        path: ${{ env.PNPM_STORE_PATH }}
-        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-
-
     - name: Install dependencies
       run: pnpm install --no-frozen-lockfile
 
     - name: Install EAS CLI
       run: npm install -g eas-cli@latest
 
+    - name: Login to Expo
+      run: eas login
+
     - name: Build APK for Testing
       run: eas build --platform android --profile preview --non-interactive
-
-    - name: Upload APK as Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: sensor-status-apk
-        path: '**/*.apk'
-        retention-days: 7
-
-    - name: Print Build Info
-      run: |
-        echo "✅ APK gerado com sucesso!"
-        echo "📱 Você pode baixar em: Actions > Build APK for Testing > Artifacts"
-        echo "🔗 Link direto: https://github.com/vapesmadcat-blip/Sensor-status/actions"
