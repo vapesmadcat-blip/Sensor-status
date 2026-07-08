@@ -47,8 +47,8 @@ jobs:
     - name: Install EAS CLI
       run: npm install -g eas-cli@latest
 
-    - name: Login to Expo
-      run: eas login
+    - name: Verify Expo authentication
+      run: eas whoami
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
