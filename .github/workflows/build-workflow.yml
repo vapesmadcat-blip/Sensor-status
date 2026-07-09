@@ -47,10 +47,13 @@ jobs:
     - name: Install EAS CLI
       run: npm install -g eas-cli@latest
 
-    - name: Login to Expo
-      run: eas login
+    - name: Build Android APK (Preview)
+      run: eas build --platform android --profile preview --non-interactive --local --output ./build/app-preview.apk
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-    - name: Build Android APK
-      run: eas build --platform android --profile production --non-interactive
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-preview-apk
+        path: ./build/app-preview.apk
