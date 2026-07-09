@@ -12,6 +12,8 @@ on:
 jobs:
   build_android:
     runs-on: ubuntu-latest
+    env:
+      APK_PATH: ./build/app-preview.apk
 
     steps:
     - name: Checkout repository
@@ -52,12 +54,12 @@ jobs:
         eas build --platform android --profile preview --non-interactive --wait --json > build-result.json
         BUILD_URL=$(jq -r '(if type=="array" then .[0] else . end | .artifacts.buildUrl // .artifacts.applicationArchiveUrl // empty)' build-result.json)
         if [ -z "$BUILD_URL" ]; then
-          echo "Failed to resolve build artifact URL from EAS build JSON (missing artifacts.buildUrl/applicationArchiveUrl)"
+          echo "Failed to resolve build artifact URL from EAS build JSON. Check build-result.json for the artifact field path."
           cat build-result.json
           exit 1
         fi
         mkdir -p ./build
-        curl -fL --retry 3 --retry-all-errors "$BUILD_URL" -o ./build/app-preview.apk
+        curl -fL --retry 3 --retry-all-errors "$BUILD_URL" -o "$APK_PATH"
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -65,5 +67,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-preview-apk
-        path: ./build/app-preview.apk
+        path: ${{ env.APK_PATH }}
         if-no-files-found: error
