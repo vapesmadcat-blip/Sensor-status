@@ -28,7 +28,8 @@ jobs:
       run: npm install -g eas-cli@latest
 
     - name: Login to Expo
-      run: eas login
+      run: eas login --no-browser
 
     - name: Build APK for Testing
       run: eas build --platform android --profile preview --non-interactive
+process
