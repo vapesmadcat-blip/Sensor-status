@@ -12,6 +12,8 @@ on:
 jobs:
   build_android:
     runs-on: ubuntu-latest
+    env:
+      APK_PATH: ./build/app-preview.apk
 
     steps:
     - name: Checkout repository
@@ -47,10 +49,26 @@ jobs:
     - name: Install EAS CLI
       run: npm install -g eas-cli@latest
 
-    - name: Login to Expo
-      run: eas login
+    - name: Build Android APK (Preview)
+      run: |
+        eas build --platform android --profile preview --non-interactive --wait --json > build-result.json
+        BUILD_URL=$(jq -r '(if type=="array" then .[0] else . end | .artifacts.buildUrl // .artifacts.applicationArchiveUrl // empty)' build-result.json)
+        if [ -z "$BUILD_URL" ]; then
+          echo "Failed to resolve build artifact URL from EAS build JSON. Check build-result.json for the artifact field path."
+          cat build-result.json
+          exit 1
+        fi
+        mkdir -p ./build
+        curl -fL --retry 3 --retry-all-errors "$BUILD_URL" -o "$APK_PATH" || {
+          echo "Failed to download APK artifact from EAS build URL"
+          exit 1
+        }
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-    - name: Build Android APK
-      run: eas build --platform android --profile production --non-interactive
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-preview-apk
+        path: ${{ env.APK_PATH }}
+        if-no-files-found: error
