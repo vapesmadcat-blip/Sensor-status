@@ -48,7 +48,7 @@ jobs:
       run: npm install -g eas-cli@latest
 
     - name: Build Android APK (Preview)
-      run: eas build --platform android --profile preview --non-interactive --local --output ./build/app-preview.apk
+      run: eas build --platform android --profile preview --non-interactive --output ./build/app-preview.apk
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -57,3 +57,4 @@ jobs:
       with:
         name: app-preview-apk
         path: ./build/app-preview.apk
+        if-no-files-found: error
