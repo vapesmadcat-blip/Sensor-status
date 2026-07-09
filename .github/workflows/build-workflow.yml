@@ -52,12 +52,12 @@ jobs:
         eas build --platform android --profile preview --non-interactive --wait --json > build-result.json
         BUILD_URL=$(jq -r '(if type=="array" then .[0] else . end | .artifacts.buildUrl // .artifacts.applicationArchiveUrl // empty)' build-result.json)
         if [ -z "$BUILD_URL" ]; then
-          echo "Failed to resolve build artifact URL"
+          echo "Failed to resolve build artifact URL from EAS build JSON (missing artifacts.buildUrl/applicationArchiveUrl)"
           cat build-result.json
           exit 1
         fi
         mkdir -p ./build
-        curl -L "$BUILD_URL" -o ./build/app-preview.apk
+        curl -fL --retry 3 --retry-all-errors "$BUILD_URL" -o ./build/app-preview.apk
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
