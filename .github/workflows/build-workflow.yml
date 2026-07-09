@@ -59,7 +59,10 @@ jobs:
           exit 1
         fi
         mkdir -p ./build
-        curl -fL --retry 3 --retry-all-errors "$BUILD_URL" -o "$APK_PATH"
+        curl -fL --retry 3 --retry-all-errors "$BUILD_URL" -o "$APK_PATH" || {
+          echo "Failed to download APK artifact from EAS build URL"
+          exit 1
+        }
       env:
         EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
