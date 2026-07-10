@@ -31,5 +31,4 @@ jobs:
       run: eas login --no-browser
 
     - name: Build APK for Testing
-      run: eas build --platform android --profile preview --non-interactive
-process
+      run: easbuild --platform android --profile preview --non-interactive-process
